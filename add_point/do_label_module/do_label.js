@@ -1,19 +1,31 @@
 let index = -1;
 
+
+
+
+/////// not available for safary
+/////// please use chrome
+
+
 /// config
 const root_path = "../temp/";
+const MAX_POINT = 5;
+const MY_LINK = [[0,1],[1,2],[2,3],[3,4]];
+const API_PATH = 'https://favorite-innocent-design.anvil.app/_/api/dme';
+
+/// css
 const border_size = 10;
 const line_color = 'white';
 const point_size = 3;
 const point_color = 'red';
 const point_border = 'black';
 
+
 ///
 const output_p = $('#output_p')[0];
 const canvas_canvas = $('#canvas_canvas')[0];
 let ctx = canvas_canvas.getContext('2d');
 let point_collection = [];
-let dat = 'eee';
 
 async function show_img(index) {
     output_p.innerHTML = "index = " + index;
@@ -39,7 +51,7 @@ $('#save_btn').click(() => {
 
     point_collection = [];
 });
-$('#canvas_canvas').mousedown((e) => {
+$('#canvas_canvas').mousedown(async (e) => {
     function getCoordinates(e) {
         let x = e.clientX - canvas_canvas.offsetLeft - border_size - 1;
         let y = e.clientY - canvas_canvas.offsetTop - border_size - 2;
@@ -49,71 +61,108 @@ $('#canvas_canvas').mousedown((e) => {
         return point;
     }
     let point = getCoordinates(e);
-    point_collection.push(point);
-    draw_rect3(point_collection);
+    if (point_collection.length < MAX_POINT){
+        point_collection.push(point);
+        await handle_points(point_collection);
+    }else{
+        alert('too much point?');
+
+    }
 })
 
-document.addEventListener('keypress', function (e) {
+document.addEventListener('keypress', async function (e) {
     // 13 -> enter button
     // 32 -> space button
+    // 59 -> ;
     e.preventDefault();
     console.log(index);
-    console.log(dat);
-    $.ajaxSetup({
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-    });
-    if (e.which == 59) {
+    if (e.which == 32 ) {
         // dat
         //// four point
         // save
-        let url = "http://localhost:8000/save";
-        let data = JSON.stringify({
-            "i": index,
-            "dat": dat
-        });
 
-        $.post(url, data, (res) => {
-            $("#output_p").html(res);
-        }, dataType = 'json');
-        index += 1;
-        show_img(index);
-        point_collection = [];
+        if (point_collection.length != MAX_POINT){
+            alert('n point_collection != max_point');
+        }else{
+            function toStr(point){
+                return point[0]/600 + ',' + point[1]/600 + ';'
+            }
+            // save
+            let dat = '';
+            point_collection.forEach((point)=>{
+                dat += toStr(point);
+            })
+            point_collection = [];
+            await do_api(index, dat);
+            index += 1;
+            show_img(index);
+        }
     }
 });
 
+
+
+async function do_api(index, dat){
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    var raw = JSON.stringify({
+    "i": index,
+    "dat": dat
+    });
+
+    var requestOptions = {
+    method: 'POST',
+    headers: myHeaders,
+    body: raw,
+    redirect: 'follow'
+    };
+
+    fetch("https://favorite-innocent-design.anvil.app/_/api/dme", requestOptions)
+    .then(response => response.text())
+    .then(result => console.log(result))
+    .catch(error => console.log('error', error));
+}
+
+function draw_display(_points){
+    // draw points
+    _points.forEach((p) => draw_point(p))
+
+    // draw link
+    MY_LINK.forEach(
+        (val) => {
+            if (val) {
+                let a = val[0];
+                let b = val[1];
+                console.log('--------');
+                console.log(a);
+                console.log(b);
+                console.log(_points.length);
+                console.log(_points[a]);
+                console.log('---end-----');
+
+                if (_points.length > a && _points.length > b){
+                    draw_line(_points[a], _points[b]);
+                }
+
+            }
+        } 
+    );
+}
+
 /// draw function
-async function draw_rect3(_points) {
-     if (_points.length == 1) {
-        show_img(index);
-        let p0 = _points[0];
-        draw_point(p0)
-    }
-    else if (_points.length == 2) {
-        //  |---o
-        //  |   |
-        //  1---|
-        let top_right = _points[0];
-        let bottom_left = _points[1];
-
-        let top_left = [bottom_left[0], top_right[1]];
-        let bottom_right = [top_right[0], bottom_left[1]];
-
-        draw_line(top_left, bottom_left)
-        draw_line(bottom_left, bottom_right)
-        draw_line(bottom_right, top_right)
-        draw_line(top_right, top_left)
+async function handle_points(_points) {
+    if (_points.length < MAX_POINT) {
+        await show_img(index);
         
-        function toStr(point){
-            return point[0]/600 + ',' + point[1]/600 + ';'
-        }
-
-        // save
-        dat = toStr(top_right)
-        dat += toStr(bottom_left)
-        point_collection = [];
+        draw_display(_points);
+    }
+    else if (_points.length == MAX_POINT) {
+        draw_display(_points);
+        
+    }
+    else{
+        alert('xxx');
     }
     console.log(point_collection);
 }
@@ -121,7 +170,8 @@ async function draw_rect3(_points) {
 async function draw_rect(_points) {
     if (_points.length == 1) {
         // clear draw
-        await show_img(index)
+        // await show_img(index)
+        alert('hellllll');
     }
     else if (_points.length == 2) {
         // draw rect
