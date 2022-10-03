@@ -102,10 +102,10 @@ class DMERawData:
                             thres = 720/360
                             x, y = x*thres, y*thres
 
-                            if self.hand_side == 'L':
+                            # if self.hand_side == 'L':
                                 # plt.title('real-side = ' + str(self.hand_side))
                                 # swap x = -x
-                                x = 720 - x
+                                # x = 720 - x
                             # green if no covered
                             # red if covered
                             color = (0,255,0) if c_point == '0' else (0,0,255)
