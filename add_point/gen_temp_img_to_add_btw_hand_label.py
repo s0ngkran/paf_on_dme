@@ -34,7 +34,7 @@ def gen_temp():
 def read_name_map():
     with open(JSON_PATH, 'r') as f:
         dat = json.loads(f.read())
-    print([dat[0]])
+    print([dat['0']])
 
 if __name__ == '__main__':
     gen_temp()

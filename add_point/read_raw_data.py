@@ -109,7 +109,10 @@ class DMERawData:
                             # green if no covered
                             # red if covered
                             color = (0,255,0) if c_point == '0' else (0,0,255)
-                            cv2.circle(img, (int(x), int(y)), 5, color, -1)
+
+                            if self.hand_side == 'L':
+                                img = cv2.flip(img, 1)
+                                cv2.circle(img, (int(x), int(y)), 5, color, -1)
                         return cv2.imwrite(path, img)
 
                 self.data = [DMEImg(d, img_folder) for d in data]
