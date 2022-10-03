@@ -110,7 +110,7 @@ class DMERawData:
                             # red if covered
                             color = (0,255,0) if c_point == '0' else (0,0,255)
                             cv2.circle(img, (int(x), int(y)), 5, color, -1)
-                        cv2.imwrite(path, img)
+                        return cv2.imwrite(path, img)
 
                 self.data = [DMEImg(d, img_folder) for d in data]
                 data = []
