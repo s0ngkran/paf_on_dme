@@ -2,7 +2,7 @@ import json
 import os
 
 import matplotlib.pyplot as plt
-
+import cv2
 
 class DMERawData:
     def __init__(
@@ -37,14 +37,18 @@ class DMERawData:
                         #    'covered_point': ['0', '0', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
                         #     'covered_link': [False, False, True, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False]}
 
-                        self.raw_path = dict['path']
-                        self.path = img_folder + '/' + \
-                            self.raw_path.split('/')[-1]
+                        self.img_path = dict['path']
+                        self.img_name = self.img_path.split('/')[-1]
+                        self.path = img_folder + '/' + self.img_name
+                        self.replica_num = self.img_name[0]
+                        self.raw_path = os.path.join(
+                            '../dme_data_raw/hand', self.img_name[1:])
                         self.keypoint = dict['keypoint']
                         self.hand_side = dict['hand_side']
                         self.gt = int(dict['gt'])
                         self.user = dict['user']
                         self.status = dict['status']
+                        assert self.hand_side in ['R', 'L']
 
                         # do not use these old gts
                         # self.gts = dict['gts']
@@ -65,8 +69,56 @@ class DMERawData:
                         if show:
                             plt.show()
 
+                    def plot_raw(self, show=False, save=False):
+                        img = plt.imread(self.raw_path)
+                        plt.imshow(img)
+                        for kp in self.keypoint:
+                            x, y, c_point, c_link = kp
+                            # scale from 360 to 720
+                            thres = 720/360
+                            x, y = x*thres, y*thres
+
+                            if self.hand_side == 'L':
+                                plt.title('real-side = ' + str(self.hand_side))
+                                # swap x = -x
+                                x = 720 - x
+                            # green if no covered
+                            # red if covered
+                            color = 'og' if c_point == '0' else 'or'
+                            plt.plot(x, y, color)
+
+                        if save:
+                            plt.axis('off')
+                            plt.savefig('out.png', bbox_inches='tight',transparent=True , pad_inches=0)
+                            return
+                        if show:
+                            plt.show()
+                            return
+                    def save_img(self, path):
+                        img = cv2.imread(self.raw_path)
+                        for kp in self.keypoint:
+                            x, y, c_point, c_link = kp
+                            # scale from 360 to 720
+                            thres = 720/360
+                            x, y = x*thres, y*thres
+
+                            if self.hand_side == 'L':
+                                # plt.title('real-side = ' + str(self.hand_side))
+                                # swap x = -x
+                                x = 720 - x
+                            # green if no covered
+                            # red if covered
+                            color = (0,255,0) if c_point == '0' else (0,0,255)
+                            cv2.circle(img, (int(x), int(y)), 5, color, -1)
+                        cv2.imwrite(path, img)
+
                 self.data = [DMEImg(d, img_folder) for d in data]
-                print(len(self.data))
+                data = []
+                for dat in self.data:
+                    if dat.replica_num == str(0):
+                        data.append(dat)
+                self.data = data
+                print('len data =', len(self.data))
 
         self.training_set = DMESet(
             root+img_folder_training_set,
@@ -80,10 +132,20 @@ class DMERawData:
             root+img_folder_testing_set,
             root+gt_path_testing_set,
         )
+        print(
+            'tr + va + te =',
+            len(self.training_set.data) +
+            len(self.validation_set.data) +
+            len(self.testing_set.data)
+        )
+
 
 if __name__ == '__main__':
     dme_data = DMERawData()
-    aa = dme_data.training_set.data[0].plot(1)
+    # for i in range(10):
+    #     aa = dme_data.training_set.data[i].plot_raw(save=1)
+    aa = dme_data.training_set.data[0]
+    aa.save_img('temp/' + aa.img_name)
     # aa = dme_data.training_set.data[1].plot(1)
     # aa = dme_data.training_set.data[2].plot(1)
     # for a in aa:
