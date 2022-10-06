@@ -24,6 +24,7 @@ def gen_temp():
         pth = TEMP_FOLDER + str(i) + '.jpg'
         suc = dat.save_img(pth)
         assert suc == True
+        if i > 6:break
         name_map[str(i)] = pth + ' ---> ' + dat.img_name
     with open(JSON_PATH, 'w') as f:
         f.write(json.dumps(name_map))

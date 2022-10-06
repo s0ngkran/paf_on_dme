@@ -12,6 +12,7 @@ const root_path = "../temp/";
 const MAX_POINT = 5;
 const MY_LINK = [[0,1],[1,2],[2,3],[3,4]];
 const API_PATH = 'https://favorite-innocent-design.anvil.app/_/api/dme';
+const CANVAS_SIZE = 500;
 
 /// css
 const border_size = 10;
@@ -85,7 +86,7 @@ document.addEventListener('keypress', async function (e) {
             alert('n point_collection != max_point');
         }else{
             function toStr(point){
-                return point[0]/600 + ',' + point[1]/600 + ';'
+                return point[0]/CANVAS_SIZE + ',' + point[1]/CANVAS_SIZE + ';'
             }
             // save
             let dat = '';

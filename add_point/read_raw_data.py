@@ -102,18 +102,25 @@ class DMERawData:
                             thres = 720/360
                             x, y = x*thres, y*thres
 
-                            # if self.hand_side == 'L':
-                                # plt.title('real-side = ' + str(self.hand_side))
+                            if self.hand_side == 'L':
                                 # swap x = -x
-                                # x = 720 - x
+                                x = 720 - x
+                                # pass
                             # green if no covered
                             # red if covered
                             color = (0,255,0) if c_point == '0' else (0,0,255)
+                            cv2.circle(img, (int(x), int(y)), 5, color, -1)
 
-                            if self.hand_side == 'L':
-                                img = cv2.flip(img, 1)
-                                cv2.circle(img, (int(x), int(y)), 5, color, -1)
-                        return cv2.imwrite(path, img)
+
+                        if self.hand_side == 'L':
+                            img = cv2.flip(img, 1)
+
+                        cv2.imwrite(path, img)
+                        img = plt.imread(path)
+                        plt.imshow(img)
+                        plt.title('side' + str(self.hand_side))
+                        plt.show()
+                        return True
 
                 self.data = [DMEImg(d, img_folder) for d in data]
                 data = []
