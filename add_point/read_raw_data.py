@@ -152,10 +152,10 @@ class DMERawData:
 
 if __name__ == '__main__':
     dme_data = DMERawData()
-    # for i in range(10):
-    #     aa = dme_data.training_set.data[i].plot_raw(save=1)
     aa = dme_data.training_set.data[0]
     aa.save_img('temp/' + aa.img_name)
+    # for i in range(10):
+    #     aa = dme_data.training_set.data[i].plot_raw(save=1)
     # aa = dme_data.training_set.data[1].plot(1)
     # aa = dme_data.training_set.data[2].plot(1)
     # for a in aa:
