@@ -4,6 +4,7 @@ import os
 import matplotlib.pyplot as plt
 import cv2
 
+
 class DMERawData:
     def __init__(
         self,
@@ -49,12 +50,15 @@ class DMERawData:
                         self.user = dict['user']
                         self.status = dict['status']
                         assert self.hand_side in ['R', 'L']
+                        self.full_or_only_hands = None
 
                         # do not use these old gts
                         # self.gts = dict['gts']
                         # self.gtl = dict['gtl']
                         # self.covered_point = dict['covered_point']
                         # self.covered_link = dict['covered_link']
+                    def add_full_or_only_hands(self, is_full):
+                        self.full_or_only_hands = 'full' if is_full else 'only_hands'
 
                     def plot(self, show=False):
                         img = plt.imread(self.path)
@@ -89,11 +93,13 @@ class DMERawData:
 
                         if save:
                             plt.axis('off')
-                            plt.savefig('out.png', bbox_inches='tight',transparent=True , pad_inches=0)
+                            plt.savefig('out.png', bbox_inches='tight',
+                                        transparent=True, pad_inches=0)
                             return
                         if show:
                             plt.show()
                             return
+
                     def save_img(self, path):
                         img = cv2.imread(self.raw_path)
                         for kp in self.keypoint:
@@ -108,9 +114,9 @@ class DMERawData:
                                 # pass
                             # green if no covered
                             # red if covered
-                            color = (0,255,0) if c_point == '0' else (0,0,255)
+                            color = (0, 255, 0) if c_point == '0' else (
+                                0, 0, 255)
                             cv2.circle(img, (int(x), int(y)), 5, color, -1)
-
 
                         if self.hand_side == 'L':
                             img = cv2.flip(img, 1)
@@ -129,6 +135,11 @@ class DMERawData:
                         data.append(dat)
                 self.data = data
                 print('len data =', len(self.data))
+            def get_n_full(self):
+                return sum(1 if dat.full_or_only_hands == 'full' else 0 for dat in self.data) 
+            def get_n_only_hands(self):
+                return sum(1 if dat.full_or_only_hands == 'only_hands' else 0 for dat in self.data) 
+            
 
         self.training_set = DMESet(
             root+img_folder_training_set,
@@ -149,11 +160,56 @@ class DMERawData:
             len(self.testing_set.data)
         )
 
+        def find_n_add_full_or_only_hands(only_hands_fname, data_set):
+            with open(only_hands_fname, 'r') as f:
+                data = f.readlines()
+            temp = {}
+            '''
+            example 
+
+            7;0103.jpeg;full
+            8;0104.jpeg;full
+            9;0105.jpeg;full
+            '''
+            for dat in data:
+                index, img_name, full_or_only_hands = dat.strip().split(';')
+                temp[img_name] = dat
+
+            for dat in data_set.data:
+                finding_name = dat.img_name
+                index, img_name, full_or_only_hands = temp[finding_name].split(
+                    ';')
+                is_full = full_or_only_hands.strip() == 'full'
+                dat.add_full_or_only_hands(is_full)
+            return data_set
+
+        self.training_set = find_n_add_full_or_only_hands(
+            'add_point/training_set_only_hands.txt',
+            self.training_set,
+        )
+        # self.validation_set = find_n_add_full_or_only_hands(
+        #     'add_point/validation_set_only_hands.txt',
+        #     self.validation_set,
+        # )
+        # self.testing_set = find_n_add_full_or_only_hands(
+        #     'add_point/testing_set_only_hands.txt',
+        #     self.testing_set,
+        # )
+
+
+        print('added full or only_hands')
+
 
 if __name__ == '__main__':
     dme_data = DMERawData()
-    aa = dme_data.training_set.data[0]
-    aa.save_img('temp/' + aa.img_name)
+    # aa = dme_data.training_set.data[0]
+    # aa.save_img('temp/' + aa.img_name)
+
+    d = dme_data.training_set
+    a = d.get_n_full()
+    b = d.get_n_only_hands()
+    
+    print(a, b,'--', len(d.data))
     # for i in range(10):
     #     aa = dme_data.training_set.data[i].plot_raw(save=1)
     # aa = dme_data.training_set.data[1].plot(1)
