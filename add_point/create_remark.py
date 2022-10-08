@@ -36,17 +36,19 @@ def cv2_show_img(dat):
     cv2.destroyAllWindows()
     return is_break
 
-
-def run(dme_data):
-    for i, dat in enumerate(dme_data.training_set.data):
-        if i <= 592: continue
+def run(data):
+    for i, dat in enumerate(data):
+        # if i <= 592: continue
         dat.index = i
         is_break = cv2_show_img(dat)
         if is_break: break
 
 if __name__ == '__main__':
     dme_data = DMERawData()
-    run(dme_data)
+    # run(dme_data.training_set.data)
+    # run(dme_data.validation_set.data)
+    run(dme_data.testing_set.data)
+
     # with open('temp.txt', 'r') as f:
     #     data = f.read()
     

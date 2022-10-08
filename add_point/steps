@@ -2,4 +2,4 @@
     -> training_set_only_hands.txt
     -> validation_set_only_hands.txt
     -> testing_set_only_hands.txt
-2. 
+2. read_raw_data.py | to check number of full and only_hands

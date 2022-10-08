@@ -187,14 +187,14 @@ class DMERawData:
             'add_point/training_set_only_hands.txt',
             self.training_set,
         )
-        # self.validation_set = find_n_add_full_or_only_hands(
-        #     'add_point/validation_set_only_hands.txt',
-        #     self.validation_set,
-        # )
-        # self.testing_set = find_n_add_full_or_only_hands(
-        #     'add_point/testing_set_only_hands.txt',
-        #     self.testing_set,
-        # )
+        self.validation_set = find_n_add_full_or_only_hands(
+            'add_point/validation_set_only_hands.txt',
+            self.validation_set,
+        )
+        self.testing_set = find_n_add_full_or_only_hands(
+            'add_point/testing_set_only_hands.txt',
+            self.testing_set,
+        )
 
 
         print('added full or only_hands')
@@ -205,7 +205,7 @@ if __name__ == '__main__':
     # aa = dme_data.training_set.data[0]
     # aa.save_img('temp/' + aa.img_name)
 
-    d = dme_data.training_set
+    d = dme_data.testing_set
     a = d.get_n_full()
     b = d.get_n_only_hands()
     
