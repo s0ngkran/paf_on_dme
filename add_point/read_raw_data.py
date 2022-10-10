@@ -135,11 +135,24 @@ class DMERawData:
                         data.append(dat)
                 self.data = data
                 print('len data =', len(self.data))
+
             def get_n_full(self):
                 return sum(1 if dat.full_or_only_hands == 'full' else 0 for dat in self.data) 
+
             def get_n_only_hands(self):
                 return sum(1 if dat.full_or_only_hands == 'only_hands' else 0 for dat in self.data) 
+
+            def build_full(self):
+                self.full = [dat for dat in self.data if dat.full_or_only_hands == 'full']
+                assert self.get_n_full() == len(self.full)
+                print('success ---build_full()')
+                return self.full
             
+            def build_only_hands(self):
+                self.only_hands = [dat for dat in self.data if dat.full_or_only_hands == 'only_hands']
+                assert self.get_n_only_hands() == len(self.only_hands)
+                print('success ---build_only_hands()')
+                return self.only_hands
 
         self.training_set = DMESet(
             root+img_folder_training_set,
@@ -208,6 +221,8 @@ if __name__ == '__main__':
     d = dme_data.testing_set
     a = d.get_n_full()
     b = d.get_n_only_hands()
+    _ = d.build_full()
+    _ = d.build_only_hands()
     
     print(a, b,'--', len(d.data))
     # for i in range(10):

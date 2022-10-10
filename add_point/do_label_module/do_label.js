@@ -1,15 +1,32 @@
 let index = -1;
 
-
-
-
 /////// not available for safary
 /////// please use chrome
 
+/*
+---------------------------------------------
+---------------------------------------------
+
+      x  x  x 
+  x   |  |  |
+  \   |  |  | 
+   \  x  x  x   
+    x          x     x-----x-
+         x    /              ----   
+            x                     -x
+         x          |-----|         |
+         |          | o o |          |
+         |          |-----|          |
+         |     ---x        x----     |
+         x----                   ----x
+
+---------------------------------------------
+---------------------------------------------
+*/     
 
 /// config
 const root_path = "../temp/";
-const MAX_POINT = 5;
+const MAX_POINT = 12+5+2;
 const MY_LINK = [[0,1],[1,2],[2,3],[3,4]];
 const API_PATH = 'https://favorite-innocent-design.anvil.app/_/api/dme';
 const CANVAS_SIZE = 500;

@@ -2,6 +2,7 @@
     - read all imgs and name
     - add the only_hands, full
 2. create program to add the points 
-3. add point to training and validation
-4. take 150 my imgs -> testing_set
-5. add point to testing_set
+3. check left and right
+4. add point to training and validation
+5. take 150 my imgs -> testing_set
+6. add point to testing_set

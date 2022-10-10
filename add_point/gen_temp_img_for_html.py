@@ -6,8 +6,8 @@ JSON_PATH = 'add_point/name_map.json'
 
 def gen_temp():
     dme_data = DMERawData()
-    data = dme_data.training_set.data + dme_data.validation_set.data + dme_data.testing_set.data
-    assert len(data) == 1630
+    data = dme_data.training_set.full 
+    assert len(data) == dme_data.training_set.get_n_full()
     '''
     1. write img
     2. create name map
