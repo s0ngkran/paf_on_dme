@@ -100,32 +100,34 @@ class DMERawData:
                             plt.show()
                             return
 
-                    def save_img(self, path):
+                    def save_img(self, path, show=False, with_keypoint=False):
                         img = cv2.imread(self.raw_path)
-                        for kp in self.keypoint:
-                            x, y, c_point, c_link = kp
-                            # scale from 360 to 720
-                            thres = 720/360
-                            x, y = x*thres, y*thres
+                        if with_keypoint:
+                            for kp in self.keypoint:
+                                x, y, c_point, c_link = kp
+                                # scale from 360 to 720
+                                thres = 720/360
+                                x, y = x*thres, y*thres
 
-                            if self.hand_side == 'L':
-                                # swap x = -x
-                                x = 720 - x
-                                # pass
-                            # green if no covered
-                            # red if covered
-                            color = (0, 255, 0) if c_point == '0' else (
-                                0, 0, 255)
-                            cv2.circle(img, (int(x), int(y)), 5, color, -1)
+                                if self.hand_side == 'L':
+                                    # swap x = -x
+                                    x = 720 - x
+                                    # pass
+                                # green if no covered
+                                # red if covered
+                                color = (0, 255, 0) if c_point == '0' else (
+                                    0, 0, 255)
+                                cv2.circle(img, (int(x), int(y)), 5, color, -1)
 
                         if self.hand_side == 'L':
                             img = cv2.flip(img, 1)
 
                         cv2.imwrite(path, img)
-                        img = plt.imread(path)
-                        plt.imshow(img)
-                        plt.title('side' + str(self.hand_side))
-                        plt.show()
+                        if show:
+                            img = plt.imread(path)
+                            plt.imshow(img)
+                            plt.title('side' + str(self.hand_side))
+                            plt.show()
                         return True
 
                 self.data = [DMEImg(d, img_folder) for d in data]
@@ -208,7 +210,6 @@ class DMERawData:
             'add_point/testing_set_only_hands.txt',
             self.testing_set,
         )
-
 
         print('added full or only_hands')
 

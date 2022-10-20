@@ -49,6 +49,8 @@ if __name__ == '__main__':
     # run(dme_data.validation_set.data)
     run(dme_data.testing_set.data)
 
+
+
     # with open('temp.txt', 'r') as f:
     #     data = f.read()
     
